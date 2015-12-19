@@ -30,10 +30,10 @@ var audiosource_audio_content   : AudioSource;
 
 // Shortcuts to components
 
-private var main_camera : GameObject;
+private var main_camera          : GameObject;
 private var character_controller : CharacterController;
-private var holder : GUISkinHolder;
-private var weapon_holder : WeaponHolder;
+private var holder               : GUISkinHolder;
+private var weapon_holder        : WeaponHolder;
 
 // state
 
@@ -45,7 +45,7 @@ private var just_started_help  = false;
 
 // Instances
 
-private var gun_instance:GameObject;
+private var gun_instance : GameObject;
 
 // Private parameters
 
@@ -209,7 +209,7 @@ class WeaponSlot {
     var spring                     = new Spring(1, 1, 100, 0.000001);
 };
 
-private var kWeaponSlotNum = 10;
+private var kWeaponSlotNum              = 10;
 private var weapon_slots : WeaponSlot[] = new WeaponSlot[kWeaponSlotNum];
 
 private var health = 1.0;
@@ -1499,8 +1499,7 @@ function UpdateSprings() {
 
 function UpdatePickupMagnet() {
     var attract_pos = transform.position - Vector3(0, character_controller.height * 0.2, 0);
-    var c = collected_rounds.length;
-    for (var i = 0; i < c; ++i) {
+    for (var i = 0; i < collected_rounds.length; ++i) {
         var round = collected_rounds[i] as GameObject;
         if (!round) {
             continue;
@@ -1512,12 +1511,16 @@ function UpdatePickupMagnet() {
                 ++unplayed_tapes;
             } else {
                 AddLooseBullet(true);
+                // this causes us to skip the next object and leave it for the next frame
+                // limiting the number of bullets absorbed per frame
+                // TODO: why not just bump up i?
                 collected_rounds.splice(i, 1);
                 PlaySoundFromGroup(sound_bullet_grab, 0.2);
             }
             GameObject.Destroy(round);
         }
     }
+    // remove all null references
     collected_rounds.remove(null);
 }
 

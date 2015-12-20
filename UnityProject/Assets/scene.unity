@@ -373,9 +373,9 @@ MonoBehaviour:
   - {fileID: 100000, guid: 562ac16c573a2e34dbd4bf018cfb7cbc, type: 2}
   - {fileID: 100000, guid: cf054d1155a951442a29a00c8c897c2a, type: 2}
   - {fileID: 100000, guid: a65de81d094f47944a2c3336544b7ca8, type: 2}
-  weapon: {fileID: 0}
   flashlight_object: {fileID: 100000, guid: 145c6e0c0ae2338458b73cc8a03c2569, type: 2}
   has_flashlight: 0
+  weapon: {fileID: 0}
 --- !u!82 &2106325459
 AudioSource:
   m_ObjectHideFlags: 0
@@ -446,12 +446,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skin: {fileID: 11400000, guid: a02cb3791bebd2b48b10b42e6239ff77, type: 2}
-  windowRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 100
-    height: 500
   menu_width: 600
   menu_height: 400
-  show_menu: 0

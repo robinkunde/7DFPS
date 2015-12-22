@@ -972,6 +972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1c7e6c999301c341beec4b2bad6b862, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  robot_type: 1
   sound_gunshot:
   - {fileID: 8300000, guid: 0358dcbe2681d1e4c8b08da0dbe28511, type: 3}
   - {fileID: 8300000, guid: b49867f8d2d044645b05f972094bd836, type: 3}
@@ -1002,11 +1003,6 @@ MonoBehaviour:
   electric_spark_obj: {fileID: 100002, guid: 25b4c9337037a8344976cf5a8529c6a0, type: 2}
   muzzle_flash: {fileID: 100008, guid: 1026f63056726a447952427344841144, type: 2}
   bullet_obj: {fileID: 100000, guid: 45aa8aee963396647970bee4b0342c1b, type: 2}
-  robot_type: 1
-  target_pos: {x: 0, y: 0, z: 0}
-  camera_pivot_state: 3
-  camera_pivot_delay: 0
-  camera_pivot_angle: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

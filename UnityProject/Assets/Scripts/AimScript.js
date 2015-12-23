@@ -194,13 +194,14 @@ private var total_tapes      = new Array();
 private var tape_in_progress = false;
 private var unplayed_tapes   = 0;
 
-private var god_mode         = false;
-private var slomo_mode       = false;
-private var iddqd_progress   = 0;
-private var idkfa_progress   = 0;
-private var slomo_progress   = 0;
-private var cheat_delay      = 0.0;
-private var level_reset_hold = 0.0;
+private var god_mode             = false;
+private var slomo_mode           = false;
+private var iddqd_progress       = 0;
+private var idkfa_progress       = 0;
+private var slomo_progress       = 0;
+private var cheat_delay          = 0.0;
+private var level_reset_hold     = 0.0;
+private var orig_fixedDeltaTime  = 0.02;
 
 enum WeaponSlotType {GUN, MAGAZINE, FLASHLIGHT, EMPTY, EMPTYING};
 
@@ -396,6 +397,9 @@ function Start() {
         tapes_remaining.push(temp_total_tapes[rand_tape_id]);
         temp_total_tapes.RemoveAt(rand_tape_id);
     }
+
+    //
+    orig_fixedDeltaTime = Time.fixedDeltaTime;
 }
 
 function GunDist() {
@@ -891,9 +895,9 @@ function HandleControls() {
     }
     if (Input.GetButtonDown("Slow Motion Toggle") && slomo_mode) {
         if (Time.timeScale == 1.0) {
-            Time.timeScale = 0.1;
+            SlomoOn();
         } else {
-            Time.timeScale = 1.0;
+            SlomoOff();
         }
     }
 }
@@ -993,9 +997,9 @@ function UpdateCheats() {
         slomo_progress = 0;
         slomo_mode     = true;
         if (Time.timeScale == 1.0) {
-            Time.timeScale = 0.1;
+            SlomoOn();
         } else {
-            Time.timeScale = 1.0;
+            SlomoOff();
         }
         PlaySoundFromGroup(holder.sound_scream, 1.0);
     }
@@ -1009,6 +1013,16 @@ function UpdateCheats() {
             slomo_progress = 0;
         }
     }
+}
+
+function SlomoOn() {
+    Time.fixedDeltaTime = orig_fixedDeltaTime / 10;
+    Time.timeScale      = 0.1;
+}
+
+function SlomoOff() {
+    Time.fixedDeltaTime = orig_fixedDeltaTime;
+    Time.timeScale      = 1.0;
 }
 
 function UpdateTape() {
@@ -1097,6 +1111,7 @@ function UpdateLevelResetButton() {
         dead_volume_fade = Mathf.Min(1.0 - level_reset_hold * 0.5, dead_volume_fade);
         dead_fade        = level_reset_hold * 0.5;
         if (level_reset_hold >= 2.0) {
+            SlomoOff();
             Application.LoadLevel(Application.loadedLevel);
             level_reset_hold = 0.0;
         }

@@ -269,10 +269,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 78a5f12aa3e44814ea65481ebbc8e7ba, type: 3}
   - {fileID: 8300000, guid: 649c1e876a0fd2b4da27717cdab009a3, type: 3}
   collided: 0
-  old_pos: {x: 0, y: 0, z: 0}
-  life_time: 0
-  glint_delay: 0
-  glint_progress: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

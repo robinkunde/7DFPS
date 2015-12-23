@@ -11,6 +11,7 @@ Notes:
 #pragma strict
 
 // outlets
+
 var sound_hit_concrete    : AudioClip[];
 var sound_hit_metal       : AudioClip[];
 var sound_hit_glass       : AudioClip[];
@@ -26,6 +27,7 @@ var spark_effect          : GameObject;
 var puff_effect           : GameObject;
 
 // state
+
 private var last_pos;
 private var hit_something = false;
 private var line_renderer : LineRenderer;

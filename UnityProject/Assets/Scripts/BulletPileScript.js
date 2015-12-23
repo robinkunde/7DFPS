@@ -39,7 +39,7 @@ function Start () {
                     Random.Range(-0.1, 0.1));
         tape.transform.rotation = BulletScript.RandomOrientation();
     }
-    // 25% to spawn flashlight if the player has none.
+    // 25% chance to spawn flashlight if the player has none.
     if (!holder.has_flashlight && Random.Range(0, 4) == 0) {
         var flashlight : GameObject = Instantiate(holder.flashlight_object);
         flashlight.transform.position = transform.position +

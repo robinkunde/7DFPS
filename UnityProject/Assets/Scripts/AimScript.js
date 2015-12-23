@@ -64,16 +64,19 @@ public class Spring {
     var vel          : float;
     var strength     : float;
     var damping      : float;
-    public function Spring(state : float, target_state : float, strength : float, damping : float){
+
+    public function Spring(state : float, target_state : float, strength : float, damping : float) {
         this.Set(state, target_state, strength, damping);
     }
-    public function Set(state : float, target_state : float, strength : float, damping : float){
+
+    public function Set(state : float, target_state : float, strength : float, damping : float) {
         this.state        = state;
         this.target_state = target_state;
         this.strength     = strength;
         this.damping      = damping;
         this.vel          = 0.0;
     }
+
     public function Update() {
         var linear_springs = false;
         if (linear_springs) {
@@ -256,10 +259,10 @@ function WasShot() {
 function FallDeath(vel : Vector3) {
     if (!god_mode && !won) {
         SetDead(true);
-        head_fall_vel = vel.y;
-        dead_fade = Mathf.Max(dead_fade, 0.5);
-        head_recoil_spring_x.vel += Random.Range(-400,400);
-        head_recoil_spring_y.vel += Random.Range(-400,400);
+        head_fall_vel             = vel.y;
+        dead_fade                 = Mathf.Max(dead_fade, 0.5);
+        head_recoil_spring_x.vel += Random.Range(-400, 400);
+        head_recoil_spring_y.vel += Random.Range(-400, 400);
     }
 }
 

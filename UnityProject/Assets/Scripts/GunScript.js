@@ -379,7 +379,7 @@ function mix(a:Quaternion, b:Quaternion, val:float) : Quaternion {
     return a * Quaternion.AngleAxis(angle * -val, axis);
 }
 
-function PlaySoundFromGroup(group : Array, volume : float) {
+function PlaySoundFromGroup(group : AudioClip[], volume : float) {
     if (group.length == 0) {
         return;
     }

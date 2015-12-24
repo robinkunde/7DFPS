@@ -24,9 +24,14 @@ var flashlight_object : GameObject;
 var has_flashlight = false;
 @HideInInspector
 var weapon : GameObject;
+@HideInInspector
+var mod_controller : ModController;
 
 function Awake () {
 	weapon = weapons[Random.Range(0, weapons.length)];
+
+    mod_controller = gameObject.AddComponent(ModController);
+    mod_controller.Init(weapon.GetComponent(WeaponHolder));
 }
 
 function Start () {

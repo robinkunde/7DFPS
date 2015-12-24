@@ -34,6 +34,7 @@ private var main_camera          : GameObject;
 private var character_controller : CharacterController;
 private var holder               : GUISkinHolder;
 private var weapon_holder        : WeaponHolder;
+private var mod_controller       : ModController;
 
 // state
 
@@ -221,6 +222,12 @@ private var dying  = false;
 private var dead   = false;
 private var won    = false;
 
+// Mod: Perks
+private var display_perks     = true;
+private var perk_title_index  = 0;
+private var kPerkDisplayDelay = 3.0;
+private var perk_delay        = kPerkDisplayDelay;
+
 function IsAiming() : boolean {
     return (gun_instance != null && aim_spring.target_state == 1.0);
 }
@@ -331,6 +338,7 @@ function Start() {
     magazine_obj       = weapon_holder.mag_object;
     gun_obj            = weapon_holder.gun_object;
     casing_with_bullet = weapon_holder.bullet_object;
+    mod_controller     = holder.mod_controller;
 
     main_camera          = GameObject.Find("Main Camera").gameObject;
     character_controller = GetComponent(CharacterController);
@@ -1804,6 +1812,30 @@ function OnGUI() {
         }
         GUI.Label(Rect(width, offset, width, 24.0), line.str, style);
         offset += 20.0;
+    }
+
+    //
+    if (display_perks && Time.timeSinceLevelLoad > 2.0) {
+        var perk_titles = mod_controller.getActivePerkTitles();
+        if (perk_title_index >= perk_titles.Length) {
+            display_perks = false;
+        } else {
+            style           = new GUIStyle(style);
+            style.fontStyle = FontStyle.Bold;
+            style.alignment = TextAnchor.UpperLeft;
+
+            var title              = perk_titles[perk_title_index];
+            style.normal.textColor = Color(0.0, 0.0, 0.0, perk_delay / kPerkDisplayDelay);
+            GUI.Label(Rect(5.5, 22 * perk_title_index + 0.5, 200.5, 22 + 0.5), title, style);
+            style.normal.textColor = Color(1.0, 1.0, 1.0, perk_delay / kPerkDisplayDelay);
+            GUI.Label(Rect(5.0, 22 * perk_title_index + 0.0, 200.0, 22.0), title, style);
+
+            perk_delay -= Time.deltaTime;
+            if (perk_delay <= 0.0) {
+                perk_delay = kPerkDisplayDelay;
+                ++perk_title_index;
+            }
+        }
     }
 
     if (dead_fade > 0.0) {

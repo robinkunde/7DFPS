@@ -222,6 +222,13 @@ function Start() {
     }
 
     target_pos  = transform.position;
+
+    //
+    var mods = GameObject.Find("gui_skin_holder").GetComponent(GUISkinHolder).GetComponent(ModController);
+    if (mods.hasPerk(Perk.MOONSHOT) && robot_type == RobotType.STATIONARY_TURRET) {
+        var constant_force = gameObject.AddComponent(ConstantForce);
+        constant_force.force = mods.getMoonshotForce(rigidbody.mass);
+    }
 }
 
 function UpdateStationaryTurret() {

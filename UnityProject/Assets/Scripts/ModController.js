@@ -2,13 +2,15 @@
 
 enum Perk {
     MOONSHOT,
+    _1850PSI,
 };
 
 private var perk_titles = {
-    Perk.MOONSHOT : 'Moonshot'
+    Perk.MOONSHOT : 'Moonshot',
+    Perk._1850PSI : '1850 psi'
 };
 
-private var available_perks = new Array(Perk.MOONSHOT);
+private var available_perks = new Array(Perk.MOONSHOT, Perk._1850PSI);
 private var active_perks    = new Hashtable();
 private var kMaxPerks       = 3;
 
@@ -20,6 +22,14 @@ public function Awake() {
         var perk : Perk    = available_perks[index];
         active_perks[perk] = perk;
         available_perks.RemoveAt(index);
+
+        if (perk == Perk.MOONSHOT) {
+            Debug.Log(available_perks.length);
+            available_perks.remove(Perk._1850PSI);
+            Debug.Log(available_perks.length);
+        } else if (perk == Perk._1850PSI) {
+            available_perks.remove(Perk.MOONSHOT);
+        }
     }
 }
 
@@ -44,4 +54,8 @@ public function getActivePerkTitles() : String[] {
 
 public function getMoonshotForce(mass : float) : Vector3 {
     return Vector3(0.0, mass * -(Physics.gravity.y + 0.25), 0.0);
+}
+
+public function get1850PSIForceMultiplier() : float {
+    return 0.025;
 }

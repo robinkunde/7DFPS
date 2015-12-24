@@ -115,7 +115,15 @@ function Update () {
             // hits will transfer a certain amount of force to the object
             var hit_rigidbody = hit.transform.gameObject.rigidbody;
             if (hit_rigidbody) {
-                hit_rigidbody.AddForceAtPosition(velocity * 0.01, hit.point, ForceMode.Impulse);
+                var force_multiplier = 0.01;
+                if (!hostile) {
+                    var mods = GameObject.Find("gui_skin_holder").GetComponent(GUISkinHolder).GetComponent(ModController);
+                    if (mods.hasPerk(Perk._1850PSI)) {
+                        force_multiplier = 0.025;
+                    }
+                }
+
+                hit_rigidbody.AddForceAtPosition(velocity * force_multiplier, hit.point, ForceMode.Impulse);
             }
             var light_script : ShootableLight = RecursiveHasScript(hit_obj, "ShootableLight", 1);
             if (light_script) {

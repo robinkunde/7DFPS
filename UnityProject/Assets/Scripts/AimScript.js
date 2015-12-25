@@ -370,7 +370,8 @@ function Start() {
         weapon_slots[i] = new WeaponSlot();
     }
 
-    var num_start_bullets = Random.Range(0, 10);
+    var min_start_bullets = 0;
+    var max_start_bullets = 10;
     if (GetGunScript().gun_type == GunType.AUTOMATIC) {
         var num_start_mags = Random.Range(0, 3);
         for (i = 1; i <= num_start_mags; ++i) {
@@ -378,8 +379,14 @@ function Start() {
             weapon_slots[i].obj  = Instantiate(magazine_obj);
         }
     } else {
-        num_start_bullets += Random.Range(0, 20);
+        min_start_bullets = 0;
+        max_start_bullets = 20;
     }
+    if (mod_controller.HasPerk(Perk.SHRAPNEL)) {
+        min_start_bullets += 10;
+        max_start_bullets += 10;
+    }
+    var num_start_bullets = Random.Range(min_start_bullets, max_start_bullets);
 
     loose_bullets       = new Array();
     loose_bullet_spring = new Array();
@@ -484,7 +491,7 @@ function HandleGetControl() {
     var nearest_mag      = null;
     var nearest_mag_dist = 0.0;
 
-    var grab_range = mod_controller.hasPerk(Perk.SHORT_SLEEVES) ? mod_controller.getShortSleevesGrabRange() : 2.0;
+    var grab_range = mod_controller.HasPerk(Perk.SHORT_SLEEVES) ? mod_controller.GetShortSleevesGrabRange() : 2.0;
     var colliders  = Physics.OverlapSphere(main_camera.transform.position, grab_range, 1 << 8);
     for (var collider in colliders) {
         if (!collider.gameObject.rigidbody) {
@@ -1817,7 +1824,7 @@ function OnGUI() {
 
     //
     if (display_perks && Time.timeSinceLevelLoad > 2.0) {
-        var perk_titles = mod_controller.getActivePerkTitles();
+        var perk_titles = mod_controller.GetActivePerkTitles();
         if (perk_title_index >= perk_titles.Length) {
             display_perks = false;
         } else {

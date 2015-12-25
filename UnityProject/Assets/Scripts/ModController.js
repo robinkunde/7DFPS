@@ -5,16 +5,18 @@ enum Perk {
     _1850PSI,
     MONOPHOBIA,
     SHORT_SLEEVES,
+    SHRAPNEL,
 };
 
 private var perk_titles = {
     Perk.MOONSHOT      : 'Moonshot',
     Perk._1850PSI      : '1850 psi',
     Perk.MONOPHOBIA    : 'Monophobia',
-    Perk.SHORT_SLEEVES : 'Short Sleeves'
+    Perk.SHORT_SLEEVES : 'Short Sleeves',
+    Perk.SHRAPNEL      : 'Pocketful of Shrapnel'
 };
 
-private var available_perks = new Array(Perk.MOONSHOT, Perk._1850PSI, Perk.MONOPHOBIA, Perk.SHORT_SLEEVES);
+private var available_perks = new Array(Perk.MOONSHOT, Perk._1850PSI, Perk.MONOPHOBIA, Perk.SHORT_SLEEVES, Perk.SHRAPNEL);
 private var active_perks    = new Hashtable();
 private var kMaxPerks       = 3;
 
@@ -40,11 +42,11 @@ public function Init(weapon_holder : WeaponHolder) {
 
 }
 
-public function hasPerk(perk : Perk) : boolean {
+public function HasPerk(perk : Perk) : boolean {
     return active_perks.Contains(perk);
 }
 
-public function getActivePerkTitles() : String[] {
+public function GetActivePerkTitles() : String[] {
     var titles = new String[active_perks.Count];
     var i = 0;
     for (var perk : Perk in active_perks.Keys) {
@@ -55,14 +57,14 @@ public function getActivePerkTitles() : String[] {
     return titles;
 }
 
-public function getMoonshotForce(mass : float) : Vector3 {
+public function GetMoonshotForce(mass : float) : Vector3 {
     return Vector3(0.0, mass * -(Physics.gravity.y + 0.25), 0.0);
 }
 
-public function get1850PSIForceMultiplier() : float {
+public function Get1850PSIForceMultiplier() : float {
     return 0.025;
 }
 
-public function getShortSleevesGrabRange() : float {
+public function GetShortSleevesGrabRange() : float {
     return 4.0;
 }

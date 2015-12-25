@@ -91,7 +91,7 @@ function Update() {
 }
 
 function FixedUpdate () {
-    if (mod_controller.hasPerk(Perk.MONOPHOBIA)) {
+    if (mod_controller.HasPerk(Perk.MONOPHOBIA)) {
         target_gain[1] = 1.0 - Mathf.Min(1.0, danger);
         target_gain[2] = 1.0 - Mathf.Min(1.0, danger);
         target_gain[3] = 1.0 - Mathf.Clamp(danger - 0.5, 0.0, 1.0);

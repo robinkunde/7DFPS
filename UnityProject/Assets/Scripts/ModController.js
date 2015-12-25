@@ -4,15 +4,17 @@ enum Perk {
     MOONSHOT,
     _1850PSI,
     MONOPHOBIA,
+    SHORT_SLEEVES,
 };
 
 private var perk_titles = {
-    Perk.MOONSHOT   : 'Moonshot',
-    Perk._1850PSI   : '1850 psi',
-    Perk.MONOPHOBIA : 'Monophobia'
+    Perk.MOONSHOT      : 'Moonshot',
+    Perk._1850PSI      : '1850 psi',
+    Perk.MONOPHOBIA    : 'Monophobia',
+    Perk.SHORT_SLEEVES : 'Short Sleeves'
 };
 
-private var available_perks = new Array(Perk.MOONSHOT, Perk._1850PSI, Perk.MONOPHOBIA);
+private var available_perks = new Array(Perk.MOONSHOT, Perk._1850PSI, Perk.MONOPHOBIA, Perk.SHORT_SLEEVES);
 private var active_perks    = new Hashtable();
 private var kMaxPerks       = 3;
 
@@ -25,10 +27,9 @@ public function Awake() {
         active_perks[perk] = perk;
         available_perks.RemoveAt(index);
 
+        // handle mutually exclusive perks
         if (perk == Perk.MOONSHOT) {
-            Debug.Log(available_perks.length);
             available_perks.remove(Perk._1850PSI);
-            Debug.Log(available_perks.length);
         } else if (perk == Perk._1850PSI) {
             available_perks.remove(Perk.MOONSHOT);
         }
@@ -60,4 +61,8 @@ public function getMoonshotForce(mass : float) : Vector3 {
 
 public function get1850PSIForceMultiplier() : float {
     return 0.025;
+}
+
+public function getShortSleevesGrabRange() : float {
+    return 4.0;
 }

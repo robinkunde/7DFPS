@@ -484,7 +484,8 @@ function HandleGetControl() {
     var nearest_mag      = null;
     var nearest_mag_dist = 0.0;
 
-    var colliders = Physics.OverlapSphere(main_camera.transform.position, 2.0, 1 << 8);
+    var grab_range = mod_controller.hasPerk(Perk.SHORT_SLEEVES) ? mod_controller.getShortSleevesGrabRange() : 2.0;
+    var colliders  = Physics.OverlapSphere(main_camera.transform.position, grab_range, 1 << 8);
     for (var collider in colliders) {
         if (!collider.gameObject.rigidbody) {
             continue;
@@ -1531,7 +1532,7 @@ function UpdatePickupMagnet() {
             continue;
         }
         round.rigidbody.velocity += (attract_pos - round.transform.position) * Time.deltaTime * 20.0;
-        round.rigidbody.velocity *= Mathf.Pow(0.1, Time.deltaTime);;
+        round.rigidbody.velocity *= Mathf.Pow(0.1, Time.deltaTime);
         if (Vector3.Distance(round.transform.position, attract_pos) < 0.5) {
             if (round.gameObject.name == "cassette_tape(Clone)") {
                 ++unplayed_tapes;

@@ -28,6 +28,7 @@ private var mystical                = 0.0;
 private var global_gain             = 1.0;
 private var target_global_gain      = 1.0;
 private var gain_recover_delay      = 0.0;
+private var mod_controller          : ModController;
 
 enum MusicEvent {DEAD, WON};
 function HandleEvent(event : MusicEvent) {
@@ -73,6 +74,9 @@ function Start () {
     sting_source = gameObject.AddComponent(AudioSource);
 
     target_gain[0] = 1.0;
+
+    //
+    mod_controller = GameObject.Find("gui_skin_holder").GetComponent(GUISkinHolder).GetComponent(ModController);
 }
 
 function Update() {
@@ -87,9 +91,15 @@ function Update() {
 }
 
 function FixedUpdate () {
-    target_gain[1] = danger;
-    target_gain[2] = danger;
-    target_gain[3] = Mathf.Max(0.0, danger - 0.5);
+    if (mod_controller.hasPerk(Perk.MONOPHOBIA)) {
+        target_gain[1] = 1.0 - Mathf.Min(1.0, danger);
+        target_gain[2] = 1.0 - Mathf.Min(1.0, danger);
+        target_gain[3] = 1.0 - Mathf.Clamp(danger - 0.5, 0.0, 1.0);
+    } else {
+        target_gain[1] = danger;
+        target_gain[2] = danger;
+        target_gain[3] = Mathf.Max(0.0, danger - 0.5);
+    }
     target_gain[4] = mystical;
 
     danger   *= 0.99;

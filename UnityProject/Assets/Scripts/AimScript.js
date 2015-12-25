@@ -1826,9 +1826,9 @@ function OnGUI() {
 
             var title              = perk_titles[perk_title_index];
             style.normal.textColor = Color(0.0, 0.0, 0.0, perk_delay / kPerkDisplayDelay);
-            GUI.Label(Rect(5.5, 22 * perk_title_index + 0.5, 200.5, 22 + 0.5), title, style);
+            GUI.Label(Rect(5.5, 20.0 * perk_title_index + 0.5, width + 0.5, 24.0 + 0.5), title, style);
             style.normal.textColor = Color(1.0, 1.0, 1.0, perk_delay / kPerkDisplayDelay);
-            GUI.Label(Rect(5.0, 22 * perk_title_index + 0.0, 200.0, 22.0), title, style);
+            GUI.Label(Rect(5.0, 20.0 * perk_title_index + 0.0, width, 24.0), title, style);
 
             perk_delay -= Time.deltaTime;
             if (perk_delay <= 0.0) {

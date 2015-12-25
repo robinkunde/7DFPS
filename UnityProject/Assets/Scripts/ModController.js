@@ -3,14 +3,16 @@
 enum Perk {
     MOONSHOT,
     _1850PSI,
+    MONOPHOBIA,
 };
 
 private var perk_titles = {
-    Perk.MOONSHOT : 'Moonshot',
-    Perk._1850PSI : '1850 psi'
+    Perk.MOONSHOT   : 'Moonshot',
+    Perk._1850PSI   : '1850 psi',
+    Perk.MONOPHOBIA : 'Monophobia'
 };
 
-private var available_perks = new Array(Perk.MOONSHOT, Perk._1850PSI);
+private var available_perks = new Array(Perk.MOONSHOT, Perk._1850PSI, Perk.MONOPHOBIA);
 private var active_perks    = new Hashtable();
 private var kMaxPerks       = 3;
 

@@ -224,10 +224,10 @@ function Start() {
     target_pos  = transform.position;
 
     //
-    var mods = GameObject.Find("gui_skin_holder").GetComponent(GUISkinHolder).GetComponent(ModController);
-    if (mods.HasPerk(Perk.MOONSHOT) && robot_type == RobotType.STATIONARY_TURRET) {
+    var mod_controller = GameObject.Find("gui_skin_holder").GetComponent(GUISkinHolder).mod_controller;
+    if (mod_controller.HasPerk(Perk.MOONSHOT) && robot_type == RobotType.STATIONARY_TURRET) {
         var constant_force   = gameObject.AddComponent(ConstantForce);
-        constant_force.force = mods.GetMoonshotForce(rigidbody.mass);
+        constant_force.force = mod_controller.GetMoonshotForce(rigidbody.mass);
     }
 }
 

@@ -76,7 +76,7 @@ function Start () {
     target_gain[0] = 1.0;
 
     //
-    mod_controller = GameObject.Find("gui_skin_holder").GetComponent(GUISkinHolder).GetComponent(ModController);
+    mod_controller = GameObject.Find("gui_skin_holder").GetComponent(GUISkinHolder).mod_controller;
 }
 
 function Update() {

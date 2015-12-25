@@ -19,6 +19,11 @@ var hold_rotation : Vector3;
 
 // state
 
+@HideInInspector
+public var collided = false;
+@HideInInspector
+public var has_been_held = false;
+
 private var num_rounds : int;
 
 private var round_pos : Vector3[];
@@ -26,7 +31,6 @@ private var round_rot : Quaternion[];
 private var old_pos   : Vector3;
 
 private var life_time = 0.0;
-private var collided  = false;
 
 enum MagLoadStage {NONE, PUSHING_DOWN, ADDING_ROUND, REMOVING_ROUND, PUSHING_UP};
 private var mag_load_stage    = MagLoadStage.NONE;

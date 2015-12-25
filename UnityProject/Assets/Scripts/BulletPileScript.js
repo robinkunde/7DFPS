@@ -48,6 +48,21 @@ function Start () {
                     Random.Range(-0.1, 0.1));
         flashlight.transform.rotation = BulletScript.RandomOrientation();
     }
+
+    var mod_controller   = holder.mod_controller;
+    var mag_spawn_chance = mod_controller.GetMagSpawnChance();
+    if (weapon_holder.mag_object && mod_controller.HasPerk(Perk.MAGNIFICENT) && Random.Range(0, 100) < mag_spawn_chance) {
+        mod_controller.DidSpawnMag();
+
+        var mag : GameObject   = Instantiate(weapon_holder.mag_object);
+        mag.transform.position = transform.position +
+            Vector3(Random.Range(0.1, 0.2),
+                    Random.Range(0.2, 0.4),
+                    Random.Range(0.1, 0.2));
+        mag.transform.rotation = BulletScript.RandomOrientation();
+        mag.AddComponent(Rigidbody);
+        mag.GetComponent(mag_script).collided = true;
+    }
 }
 
 // Pile is inert

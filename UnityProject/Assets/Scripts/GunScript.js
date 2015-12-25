@@ -231,8 +231,9 @@ function Start () {
     }
 
     if (gun_type == GunType.AUTOMATIC) {
-        magazine_instance_in_gun                  = Instantiate(magazine_obj);
-        magazine_instance_in_gun.transform.parent = transform;
+        magazine_instance_in_gun                                        = Instantiate(magazine_obj);
+        magazine_instance_in_gun.transform.parent                       = transform;
+        magazine_instance_in_gun.GetComponent(mag_script).has_been_held = true;
 
         for (var renderer : Renderer in magazine_instance_in_gun.GetComponentsInChildren(Renderer)) {
             renderer.castShadows = false;

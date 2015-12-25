@@ -375,8 +375,9 @@ function Start() {
     if (GetGunScript().gun_type == GunType.AUTOMATIC) {
         var num_start_mags = Random.Range(0, 3);
         for (i = 1; i <= num_start_mags; ++i) {
-            weapon_slots[i].type = WeaponSlotType.MAGAZINE;
-            weapon_slots[i].obj  = Instantiate(magazine_obj);
+            weapon_slots[i].type                                       = WeaponSlotType.MAGAZINE;
+            weapon_slots[i].obj                                        = Instantiate(magazine_obj);
+            weapon_slots[i].obj.GetComponent(mag_script).has_been_held = true;
         }
     } else {
         min_start_bullets = 0;
@@ -533,6 +534,12 @@ function HandleGetControl() {
     if (nearest_mag && mag_stage == HandMagStage.EMPTY) {
         magazine_instance_in_hand = nearest_mag;
         Destroy(magazine_instance_in_hand.rigidbody);
+
+        var mag_script = magazine_instance_in_hand.GetComponent(mag_script);
+        if (!mag_script.has_been_held) {
+            mag_script.has_been_held = true;
+            mod_controller.DidPickupMag();
+        }
 
         mag_ground_pos                = magazine_instance_in_hand.transform.position;
         mag_ground_rot                = magazine_instance_in_hand.transform.rotation;
@@ -1588,6 +1595,15 @@ function Update() {
     }
     UpdateSprings();
     UpdatePickupMagnet();
+
+    //
+    if (display_perks && Time.timeSinceLevelLoad > 2.0) {
+        perk_delay -= Time.deltaTime;
+        if (perk_delay <= 0.0) {
+            perk_delay = kPerkDisplayDelay;
+            ++perk_title_index;
+        }
+    }
 }
 
 function FixedUpdate() {
@@ -1837,12 +1853,6 @@ function OnGUI() {
             GUI.Label(Rect(5.5, 20.0 * perk_title_index + 0.5, width + 0.5, 24.0 + 0.5), title, style);
             style.normal.textColor = Color(1.0, 1.0, 1.0, perk_delay / kPerkDisplayDelay);
             GUI.Label(Rect(5.0, 20.0 * perk_title_index + 0.0, width, 24.0), title, style);
-
-            perk_delay -= Time.deltaTime;
-            if (perk_delay <= 0.0) {
-                perk_delay = kPerkDisplayDelay;
-                ++perk_title_index;
-            }
         }
     }
 

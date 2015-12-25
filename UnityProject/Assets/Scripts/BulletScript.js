@@ -117,9 +117,9 @@ function Update () {
             if (hit_rigidbody) {
                 var force_multiplier = 0.01;
                 if (!hostile) {
-                    var mods = GameObject.Find("gui_skin_holder").GetComponent(GUISkinHolder).GetComponent(ModController);
-                    if (mods.HasPerk(Perk._1850PSI)) {
-                        force_multiplier = mods.Get1850PSIForceMultiplier();
+                    var mod_controller = GameObject.Find("gui_skin_holder").GetComponent(GUISkinHolder).mod_controller;
+                    if (mod_controller.HasPerk(Perk._1850PSI)) {
+                        force_multiplier = mod_controller.Get1850PSIForceMultiplier();
                     }
                 }
 

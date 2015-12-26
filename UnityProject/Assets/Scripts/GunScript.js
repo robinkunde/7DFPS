@@ -8,6 +8,7 @@ and the undergoes whatever statechange is valid for those forces.
 3.1 The slide moving back after shooting. It's set back completely immediately.
 3.2 Analog trigger. It only has two states.
 3.3 The hammer moving down after the trigger is pulled.
+4. Even though the Glock 17 doesn't have a hammer, the hammer state is still relied on for operation. This should be changed in the future.
 
 Bugs:
 1. No overflow/underflow protection around active_cylinder.
@@ -404,9 +405,9 @@ function ApplyPressureToTrigger() : boolean {
     // auto enabled or not fired on this pull yet
     if ((pressure_on_trigger == PressureState.INITIAL || action_type == ActionType.DOUBLE) && !slide_lock && hammer_cocked == 1.0 && safety_off == 1.0 && (auto_mod_stage == AutoModStage.ENABLED || !fired_once_this_pull)) {
         trigger_pressed = 1.0;
-        hammer_cocked   = 0.0;
         // Don't fire unless the slide is fully forward
         if (gun_type == GunType.AUTOMATIC && slide_amount == 0.0) {
+            hammer_cocked = 0.0;
             if (round_in_chamber && round_in_chamber_state == RoundState.READY) {
                 PlaySoundFromGroup(sound_gunshot_smallroom, 1.0);
                 GameObject.Destroy(round_in_chamber);
@@ -433,6 +434,7 @@ function ApplyPressureToTrigger() : boolean {
                 PlaySoundFromGroup(sound_mag_eject_button, 0.5);
             }
         } else if (gun_type == GunType.REVOLVER) {
+            hammer_cocked = 0.0;
             var which_chamber = active_cylinder % cylinder_capacity;
             if (which_chamber < 0) {
                 which_chamber += cylinder_capacity;
@@ -956,19 +958,19 @@ function Update () {
             Vector3.Lerp(hammer_rel_pos, point_hammer_cocked.localPosition, hammer_cocked_display);
         hammer.localRotation =
             Quaternion.Slerp(hammer_rel_rot, point_hammer_cocked.localRotation, hammer_cocked_display);
+    }
 
-        if (gun_type == GunType.AUTOMATIC) {
-            // Move hammer along with slide
-            hammer_cocked = Mathf.Max(hammer_cocked, slide_amount);
-            if (hammer_cocked != 1.0 && thumb_on_hammer == Thumb.OFF_HAMMER && (pressure_on_trigger == PressureState.NONE || action_type == ActionType.SINGLE)) {
-                hammer_cocked = Mathf.Min(hammer_cocked, slide_amount);
-            }
-        } else {
-            // Lower hammer if the trigger isn't pulled long enough to cock it all the way.
-            // Could be made analog, along with the trigger.
-            if (hammer_cocked != 1.0 && hammer_cocked != 0.0 && thumb_on_hammer == Thumb.OFF_HAMMER && (pressure_on_trigger == PressureState.NONE || action_type == ActionType.SINGLE)) {
-                hammer_cocked = 0.0;
-            }
+    if (gun_type == GunType.AUTOMATIC) {
+        // Move hammer along with slide
+        hammer_cocked = Mathf.Max(hammer_cocked, slide_amount);
+        if (hammer_cocked != 1.0 && thumb_on_hammer == Thumb.OFF_HAMMER && (pressure_on_trigger == PressureState.NONE || action_type == ActionType.SINGLE)) {
+            hammer_cocked = Mathf.Min(hammer_cocked, slide_amount);
+        }
+    } else {
+        // Lower hammer if the trigger isn't pulled long enough to cock it all the way.
+        // Could be made analog, along with the trigger.
+        if (hammer_cocked != 1.0 && hammer_cocked != 0.0 && thumb_on_hammer == Thumb.OFF_HAMMER && (pressure_on_trigger == PressureState.NONE || action_type == ActionType.SINGLE)) {
+            hammer_cocked = 0.0;
         }
     }
 

@@ -27,15 +27,34 @@ var weapon : GameObject;
 @HideInInspector
 var mod_controller : ModController;
 
-function Awake () {
-	weapon = weapons[Random.Range(0, weapons.length)];
+function Awake() {
+    // We need to reset the seed here to ensure the results are consistent with what we get if we reset it for the Deja Vu perk.
+    var seed    = Random.seed;
+    Random.seed = seed;
 
-    mod_controller = gameObject.AddComponent(ModController);
-    mod_controller.Init(weapon.GetComponent(WeaponHolder));
+    weapon = weapons[Random.Range(0, weapons.length)];
+
+    mod_controller    = gameObject.AddComponent(ModController);
+    var previous_seed = PlayerPrefs.GetInt("previous_seed", 0);
+    mod_controller.Init(weapon.GetComponent(WeaponHolder), (previous_seed != 0));
+
+    if (mod_controller.HasPerk(Perk.DEJA_VU)) {
+        Random.seed = previous_seed;
+        weapon      = weapons[Random.Range(0, weapons.length)];
+
+        mod_controller.Init(weapon.GetComponent(WeaponHolder), (PlayerPrefs.GetInt("had_previous_seed", 0) == 1));
+        mod_controller.AddActivePerk(Perk.DEJA_VU);
+
+        PlayerPrefs.SetInt("had_previous_seed", 0);
+        PlayerPrefs.SetInt("previous_seed", 0);
+    } else {
+        PlayerPrefs.SetInt("had_previous_seed", (previous_seed == 0) ? 0 : 1);
+        PlayerPrefs.SetInt("previous_seed", seed);
+    }
 }
 
-function Start () {
+function Start() {
 }
 
-function Update () {
+function Update() {
 }

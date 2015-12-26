@@ -7,6 +7,7 @@ enum Perk {
     SHORT_SLEEVES,
     SHRAPNEL,
     MAGNIFICENT,
+    DEJA_VU,
 };
 
 private var perk_titles = {
@@ -15,36 +16,57 @@ private var perk_titles = {
     Perk.MONOPHOBIA    : 'Monophobia',
     Perk.SHORT_SLEEVES : 'Short Sleeves',
     Perk.SHRAPNEL      : 'Pocketful of Shrapnel',
-    Perk.MAGNIFICENT   : 'Magnificent'
+    Perk.MAGNIFICENT   : 'Magnificent',
+    Perk.DEJA_VU       : 'Déjà vu'
 };
 
-private var available_perks = new Array(Perk.MOONSHOT, Perk._1850PSI, Perk.MONOPHOBIA, Perk.SHORT_SLEEVES, Perk.SHRAPNEL, Perk.MAGNIFICENT);
+private var available_perks = new Array(Perk.MOONSHOT, Perk._1850PSI, Perk.MONOPHOBIA, Perk.SHORT_SLEEVES, Perk.SHRAPNEL, Perk.MAGNIFICENT, Perk.DEJA_VU);
 private var active_perks    = new Hashtable();
-private var kMaxPerks       = 3;
+private var kMaxPerks       = 1;
 
 public function Awake() {
 }
 
-public function Init(weapon_holder : WeaponHolder) {
+public function Init(weapon_holder : WeaponHolder, has_previous_seed : boolean) : Hashtable {
+    var all_perks = new Array(available_perks);
+    active_perks  = new Hashtable();
+
+    mags_spawned   = 0;
+    mags_picked_up = 0;
+
+    if (!has_previous_seed) {
+        all_perks.remove(Perk.DEJA_VU);
+    }
+
     if (!weapon_holder.mag_object) {
-        available_perks.remove(Perk.MAGNIFICENT);
+        all_perks.remove(Perk.MAGNIFICENT);
     }
 
     for (var i = 0; i < kMaxPerks; ++i) {
-        if (available_perks.length == 0) break;
+        if (all_perks.length == 0) break;
 
-        var index          = Random.Range(0, available_perks.length);
-        var perk : Perk    = available_perks[index];
+        var index          = Random.Range(0, all_perks.length);
+        var perk : Perk    = all_perks[index];
         active_perks[perk] = perk;
-        available_perks.RemoveAt(index);
+        all_perks.RemoveAt(index);
 
         // handle mutually exclusive perks and other perk specific actions
         if (perk == Perk.MOONSHOT) {
-            available_perks.remove(Perk._1850PSI);
+            all_perks.remove(Perk._1850PSI);
         } else if (perk == Perk._1850PSI) {
-            available_perks.remove(Perk.MOONSHOT);
+            all_perks.remove(Perk.MOONSHOT);
         }
     }
+
+    return active_perks;
+}
+
+public function SetActivePerks(perks : Hashtable) {
+    active_perks = perks;
+}
+
+public function AddActivePerk(perk : Perk) {
+    active_perks[perk] = perk;
 }
 
 public function HasPerk(perk : Perk) : boolean {
@@ -78,17 +100,17 @@ public function GetShortSleevesGrabRange() : float {
 }
 
 //
-private var magsSpawned  = 0;
-private var magsPickedUp = 0;
+private var mags_spawned   = 0;
+private var mags_picked_up = 0;
 
 public function GetMagSpawnChance() : int {
-    return Mathf.Max(0, 50 - magsSpawned * 5 - magsPickedUp * 10);
+    return Mathf.Max(0, 50 - mags_spawned * 5 - mags_picked_up * 10);
 }
 
 public function DidSpawnMag() {
-    ++magsSpawned;
+    ++mags_spawned;
 }
 
 public function DidPickupMag() {
-    ++magsPickedUp;
+    ++mags_picked_up;
 }

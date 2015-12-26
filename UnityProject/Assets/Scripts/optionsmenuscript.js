@@ -184,10 +184,9 @@ function Update() {
     }
     if (show_menu) {
         Time.timeScale = 0.0;
-    } else {
-        if (Time.timeScale == 0.0) {
-            Time.timeScale = 1.0;
-        }
+    } else if (Time.timeScale == 0.0) {
+        var mod_controller = GameObject.Find("gui_skin_holder").GetComponent(GUISkinHolder).mod_controller;
+        Time.timeScale     = mod_controller.HasPerk(Perk.SLOW_DAY) ? mod_controller.GetSlowDayTimescale() : 1.0;
     }
 }
 

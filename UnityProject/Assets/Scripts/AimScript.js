@@ -197,6 +197,7 @@ private var unplayed_tapes   = 0;
 
 private var god_mode             = false;
 private var slomo_mode           = false;
+private var slomo_enabled        = false;
 private var iddqd_progress       = 0;
 private var idkfa_progress       = 0;
 private var slomo_progress       = 0;
@@ -416,6 +417,7 @@ function Start() {
 
     //
     orig_fixedDeltaTime = Time.fixedDeltaTime;
+    Time.timeScale      = mod_controller.HasPerk(Perk.SLOW_DAY) ? mod_controller.GetSlowDayTimescale() : 1.0;
 }
 
 function GunDist() {
@@ -917,10 +919,10 @@ function HandleControls() {
         aim_toggle = !aim_toggle;
     }
     if (Input.GetButtonDown("Slow Motion Toggle") && slomo_mode) {
-        if (Time.timeScale == 1.0) {
-            SlomoOn();
-        } else {
+        if (slomo_enabled) {
             SlomoOff();
+        } else {
+            SlomoOn();
         }
     }
 }
@@ -1019,10 +1021,10 @@ function UpdateCheats() {
     } else if (slomo_progress == 4 && Input.GetKeyDown('o')) {
         slomo_progress = 0;
         slomo_mode     = true;
-        if (Time.timeScale == 1.0) {
-            SlomoOn();
-        } else {
+        if (slomo_enabled) {
             SlomoOff();
+        } else {
+            SlomoOn();
         }
         PlaySoundFromGroup(holder.sound_scream, 1.0);
     }
@@ -1041,11 +1043,13 @@ function UpdateCheats() {
 function SlomoOn() {
     Time.fixedDeltaTime = orig_fixedDeltaTime / 10;
     Time.timeScale      = 0.1;
+    slomo_enabled       = true;
 }
 
 function SlomoOff() {
     Time.fixedDeltaTime = orig_fixedDeltaTime;
-    Time.timeScale      = 1.0;
+    Time.timeScale      = mod_controller.HasPerk(Perk.SLOW_DAY) ? mod_controller.GetSlowDayTimescale() : 1.0;
+    slomo_enabled       = false;
 }
 
 function UpdateTape() {

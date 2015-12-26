@@ -8,6 +8,7 @@ enum Perk {
     SHRAPNEL,
     MAGNIFICENT,
     DEJA_VU,
+    SLOW_DAY,
 };
 
 private var perk_titles = {
@@ -17,10 +18,11 @@ private var perk_titles = {
     Perk.SHORT_SLEEVES : 'Short Sleeves',
     Perk.SHRAPNEL      : 'Pocketful of Shrapnel',
     Perk.MAGNIFICENT   : 'Magnificent',
-    Perk.DEJA_VU       : 'Déjà vu'
+    Perk.DEJA_VU       : 'Déjà vu',
+    Perk.SLOW_DAY      : 'Slow Day'
 };
 
-private var available_perks = new Array(Perk.MOONSHOT, Perk._1850PSI, Perk.MONOPHOBIA, Perk.SHORT_SLEEVES, Perk.SHRAPNEL, Perk.MAGNIFICENT, Perk.DEJA_VU);
+private var available_perks = new Array(Perk.MOONSHOT, Perk._1850PSI, Perk.MONOPHOBIA, Perk.SHORT_SLEEVES, Perk.SHRAPNEL, Perk.MAGNIFICENT, Perk.DEJA_VU, Perk.SLOW_DAY);
 private var active_perks    = new Hashtable();
 private var kMaxPerks       = 1;
 
@@ -113,4 +115,9 @@ public function DidSpawnMag() {
 
 public function DidPickupMag() {
     ++mags_picked_up;
+}
+
+//
+public function GetSlowDayTimescale() : float {
+    return 0.95;
 }

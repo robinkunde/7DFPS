@@ -294,18 +294,18 @@ function ShouldPullSlide() : boolean {
     if (gun_type != GunType.AUTOMATIC) {
         return false;
     }
-    return (!round_in_chamber && magazine_instance_in_gun && MagScript().NumRounds() > 0);
+    return (round_in_chamber == null && magazine_instance_in_gun && MagScript().NumRounds() > 0);
 }
 
 function ShouldReleaseSlideLock() : boolean {
-    return (round_in_chamber && slide_lock);
+    return (round_in_chamber != null && slide_lock);
 }
 
 function ShouldEjectMag() : boolean {
     if (gun_type != GunType.AUTOMATIC) {
         return false;
     }
-    return (magazine_instance_in_gun && MagScript().NumRounds() == 0);
+    return (magazine_instance_in_gun != null && MagScript().NumRounds() == 0);
 }
 
 function ChamberRoundFromMag() : boolean {
@@ -1155,5 +1155,5 @@ function Update () {
 
 function FixedUpdate() {
     velocity = (transform.position - old_pos) / Time.deltaTime;
-    old_pos = transform.position;
+    old_pos  = transform.position;
 }

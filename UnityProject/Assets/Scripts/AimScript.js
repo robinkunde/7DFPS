@@ -1772,7 +1772,7 @@ function OnGUI() {
 
     var style : GUIStyle = holder.gui_skin.label;
     var width            = Screen.width * 0.5;
-    var offset           = 0;
+    var offset           = 0.0;
     for (var line : DisplayLine in display_text) {
         if (line.bold) {
             style.fontStyle = FontStyle.Bold;
@@ -1780,15 +1780,15 @@ function OnGUI() {
             style.fontStyle = FontStyle.Normal;
         }
         style.fontSize = 18;
-        style.normal.textColor = Color(0, 0, 0);
-        GUI.Label(Rect(width + 0.5, offset + 0.5, width + 0.5, offset + 20 + 0.5), line.str, style);
+        style.normal.textColor = Color(0.0, 0.0, 0.0);
+        GUI.Label(Rect(width + 0.5, offset + 0.5, width + 0.5, 24.0 + 0.5), line.str, style);
         if (line.bold) {
-            style.normal.textColor = Color(1, 1, 1);
+            style.normal.textColor = Color(1.0, 1.0, 1.0);
         } else {
             style.normal.textColor = Color(0.7, 0.7, 0.7);
         }
-        GUI.Label(Rect(width, offset, width, offset + 20), line.str, style);
-        offset += 20;
+        GUI.Label(Rect(width, offset, width, 24.0), line.str, style);
+        offset += 20.0;
     }
 
     if (dead_fade > 0.0) {
@@ -1796,12 +1796,12 @@ function OnGUI() {
             Debug.LogError("Assign a Texture in the inspector.");
             return;
         }
-        GUI.color = Color(0, 0, 0, dead_fade);
-        GUI.DrawTexture(Rect(0, 0, Screen.width, Screen.height), texture_death_screen, ScaleMode.StretchToFill, true);
+        GUI.color = Color(0.0, 0.0, 0.0, dead_fade);
+        GUI.DrawTexture(Rect(0.0, 0.0, Screen.width, Screen.height), texture_death_screen, ScaleMode.StretchToFill, true);
     }
 
     if (win_fade > 0.0) {
-        GUI.color = Color(1, 1, 1, win_fade);
-        GUI.DrawTexture(Rect(0, 0, Screen.width, Screen.height), texture_death_screen, ScaleMode.StretchToFill, true);
+        GUI.color = Color(1.0, 1.0, 1.0, win_fade);
+        GUI.DrawTexture(Rect(0.0, 0.0, Screen.width, Screen.height), texture_death_screen, ScaleMode.StretchToFill, true);
     }
 }

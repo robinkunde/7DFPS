@@ -9,6 +9,7 @@ enum Perk {
     MAGNIFICENT,
     DEJA_VU,
     SLOW_DAY,
+    UNSEEN,
 };
 
 private var perk_titles = {
@@ -19,7 +20,8 @@ private var perk_titles = {
     Perk.SHRAPNEL      : 'Pocketful of Shrapnel',
     Perk.MAGNIFICENT   : 'Magnificent',
     Perk.DEJA_VU       : 'Déjà vu',
-    Perk.SLOW_DAY      : 'Slow Day'
+    Perk.SLOW_DAY      : 'Slow Day',
+    Perk.UNSEEN        : 'The Unseen Bullet is the Deadliest'
 };
 
 private var available_perks = {
@@ -30,7 +32,8 @@ private var available_perks = {
     Perk.SHRAPNEL       : 1.0,
     Perk.MAGNIFICENT    : 1.0,
     Perk.DEJA_VU        : 0.25,
-    Perk.SLOW_DAY       : 1.0
+    Perk.SLOW_DAY       : 1.0,
+    Perk.UNSEEN         : 1.0
 };
 
 private var active_perks    = new Hashtable();

@@ -63,6 +63,7 @@ private var bottom_rotor_rotation      = 0.0;
 private var stuck                      = false;
 private var stuck_delay                = 0.0;
 private var distance_sleep             = false;
+private var has_seen_player            = false;
 
 private var rotation_x                 = Spring(0.0, 0.0, 100.0, 0.0001);
 private var rotation_y                 = Spring(0.0, 0.0, 100.0, 0.0001);
@@ -71,6 +72,7 @@ private var initial_turret_position    : Vector3;
 private var tilt_correction            : Vector3;
 
 private var gun_pivot                  : Transform;
+private var mod_controller             : ModController;
 
 // drone
 enum CameraPivotState {DOWN, WAIT_UP, UP, WAIT_DOWN};
@@ -175,15 +177,15 @@ function WasShot(obj : GameObject, pos : Vector3, vel : Vector3) {
         var x_plane_pos = Vector3(-Vector3.Dot(rel_pos, z_axis), 0.0, Vector3.Dot(rel_pos, y_axis));
         rotation_x.vel += Vector3.Dot(x_plane_vel, x_plane_pos) * 10.0;
     }
-    if (robot_type == RobotType.SHOCK_DRONE) {
-        if (Random.Range(0.0, 1.0) < 0.5) {
-            Damage(transform.FindChild("battery").gameObject);
-        }
-    } else {
-        if (Random.Range(0.0, 1.0) < 0.25) {
-            Damage(transform.FindChild("battery").gameObject);
-        }
+
+    var critical_hit_chance = (robot_type == RobotType.SHOCK_DRONE) ? 0.5 : 0.25;
+    if (!has_seen_player && mod_controller.HasPerk(Perk.UNSEEN)) {
+        critical_hit_chance = 1.0;
     }
+    if (Random.Range(0.0, 1.0) < critical_hit_chance) {
+        Damage(transform.FindChild("battery").gameObject);
+    }
+
     Damage(obj);
 }
 
@@ -224,7 +226,7 @@ function Start() {
     target_pos  = transform.position;
 
     //
-    var mod_controller = GameObject.Find("gui_skin_holder").GetComponent(GUISkinHolder).mod_controller;
+    mod_controller = GameObject.Find("gui_skin_holder").GetComponent(GUISkinHolder).mod_controller;
     if (mod_controller.HasPerk(Perk.MOONSHOT) && robot_type == RobotType.STATIONARY_TURRET) {
         var constant_force   = gameObject.AddComponent(ConstantForce);
         constant_force.force = mod_controller.GetMoonshotForce(rigidbody.mass);
@@ -348,7 +350,8 @@ function UpdateStationaryTurret() {
         if (dist < kMaxRange && Vector3.Dot(-camera.transform.up, rel_pos.normalized) > 0.7) {
             var hit:RaycastHit;
             if (!Physics.Linecast(camera.position, player.transform.position, hit, 1<<0)) {
-                sees_target = true;
+                sees_target     = true;
+                has_seen_player = true;
             }
         }
 
@@ -613,14 +616,15 @@ function UpdateDrone() {
         if (dist < kMaxRange && Vector3.Dot(-camera.transform.up, rel_pos.normalized) > 0.7) {
             var hit:RaycastHit;
             if (!Physics.Linecast(camera.position, player.transform.position, hit, 1<<0)) {
-                sees_target = true;
+                sees_target     = true;
+                has_seen_player = true;
             }
         }
 
         if (sees_target) {
             var new_target = player.transform.position + player.GetComponent(CharacterMotor).GetVelocity() *
                              Mathf.Clamp(Vector3.Distance(player.transform.position, transform.position) * 0.1, 0.5, 1.0);
-            switch(ai_state){
+            switch (ai_state) {
                 case AIState.IDLE:
                     ai_state    = AIState.ALERT;
                     alert_delay = kAlertDelay;

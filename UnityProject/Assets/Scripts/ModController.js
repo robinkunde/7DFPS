@@ -22,7 +22,17 @@ private var perk_titles = {
     Perk.SLOW_DAY      : 'Slow Day'
 };
 
-private var available_perks = new Array(Perk.MOONSHOT, Perk._1850PSI, Perk.MONOPHOBIA, Perk.SHORT_SLEEVES, Perk.SHRAPNEL, Perk.MAGNIFICENT, Perk.DEJA_VU, Perk.SLOW_DAY);
+private var available_perks = {
+    Perk.MOONSHOT       : 1.0,
+    Perk._1850PSI       : 1.0,
+    Perk.MONOPHOBIA     : 1.0,
+    Perk.SHORT_SLEEVES  : 1.0,
+    Perk.SHRAPNEL       : 1.0,
+    Perk.MAGNIFICENT    : 1.0,
+    Perk.DEJA_VU        : 0.25,
+    Perk.SLOW_DAY       : 1.0
+};
+
 private var active_perks    = new Hashtable();
 private var kMaxPerks       = 1;
 
@@ -30,37 +40,78 @@ public function Awake() {
 }
 
 public function Init(weapon_holder : WeaponHolder, has_previous_seed : boolean) : Hashtable {
-    var all_perks = new Array(available_perks);
+    var all_perks = new Hashtable(available_perks);
     active_perks  = new Hashtable();
 
     mags_spawned   = 0;
     mags_picked_up = 0;
 
     if (!has_previous_seed) {
-        all_perks.remove(Perk.DEJA_VU);
+        all_perks.Remove(Perk.DEJA_VU);
     }
 
     if (!weapon_holder.mag_object) {
-        all_perks.remove(Perk.MAGNIFICENT);
+        all_perks.Remove(Perk.MAGNIFICENT);
     }
 
     for (var i = 0; i < kMaxPerks; ++i) {
-        if (all_perks.length == 0) break;
+        if (all_perks.Count == 0) break;
 
-        var index          = Random.Range(0, all_perks.length);
-        var perk : Perk    = all_perks[index];
+        var perk : Perk    = weightedRandom(all_perks);
         active_perks[perk] = perk;
-        all_perks.RemoveAt(index);
+        all_perks.Remove(perk);
 
         // handle mutually exclusive perks and other perk specific actions
         if (perk == Perk.MOONSHOT) {
-            all_perks.remove(Perk._1850PSI);
+            all_perks.Remove(Perk._1850PSI);
         } else if (perk == Perk._1850PSI) {
-            all_perks.remove(Perk.MOONSHOT);
+            all_perks.Remove(Perk.MOONSHOT);
         }
     }
 
     return active_perks;
+}
+
+public function weightedRandom(hash : Hashtable) : Perk {
+    var total_weight = 0.0;
+    for (var i : float in hash.Values) {
+        total_weight += i;
+    }
+
+    var random_num = Random.Range(0.0, total_weight);
+
+    var acc_weight = 0.0;
+    var i : Perk;
+    for (i in hash.Keys) {
+        var val : float = hash[i];
+        acc_weight     += val;
+        if (random_num < acc_weight) {
+            return i;
+        }
+    }
+
+    // guard against float inaccuracies
+    return i;
+}
+
+public function weightedRandomTest() {
+    var all_perks = new Hashtable(available_perks);
+
+    var results = new Hashtable();
+    for (var p : Perk in all_perks.Keys) {
+        results[p] = 0;
+    }
+
+    var perk : Perk;
+    for (var i = 0; i < 10000; ++i) {
+        perk = weightedRandom(all_perks);
+        var f : float = results[perk];
+        results[perk] = f + 1;
+    }
+
+    for (var p : Perk in results.Keys) {
+        Debug.Log(p + ' ' + results[p]);
+    }
 }
 
 public function SetActivePerks(perks : Hashtable) {

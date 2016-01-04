@@ -10,18 +10,20 @@ enum Perk {
     DEJA_VU,
     SLOW_DAY,
     UNSEEN,
+    CONSUMER_GRADE,
 };
 
 private var perk_titles = {
-    Perk.MOONSHOT      : 'Moonshot',
-    Perk._1850PSI      : '1850 psi',
-    Perk.MONOPHOBIA    : 'Monophobia',
-    Perk.SHORT_SLEEVES : 'Short Sleeves',
-    Perk.SHRAPNEL      : 'Pocketful of Shrapnel',
-    Perk.MAGNIFICENT   : 'Magnificent',
-    Perk.DEJA_VU       : 'Déjà vu',
-    Perk.SLOW_DAY      : 'Slow Day',
-    Perk.UNSEEN        : 'The Unseen Bullet is the Deadliest'
+    Perk.MOONSHOT       : 'Moonshot',
+    Perk._1850PSI       : '1850 psi',
+    Perk.MONOPHOBIA     : 'Monophobia',
+    Perk.SHORT_SLEEVES  : 'Short Sleeves',
+    Perk.SHRAPNEL       : 'Pocketful of Shrapnel',
+    Perk.MAGNIFICENT    : 'Magnificent',
+    Perk.DEJA_VU        : 'Déjà vu',
+    Perk.SLOW_DAY       : 'Slow Day',
+    Perk.UNSEEN         : 'The Unseen Bullet is the Deadliest',
+    Perk.CONSUMER_GRADE : 'Consumer Grade'
 };
 
 private var available_perks = {
@@ -33,7 +35,8 @@ private var available_perks = {
     Perk.MAGNIFICENT    : 1.0,
     Perk.DEJA_VU        : 0.25,
     Perk.SLOW_DAY       : 1.0,
-    Perk.UNSEEN         : 1.0
+    Perk.UNSEEN         : 1.0,
+    Perk.CONSUMER_GRADE : 1.0
 };
 
 private var active_perks    = new Hashtable();
@@ -174,4 +177,9 @@ public function DidPickupMag() {
 //
 public function GetSlowDayTimescale() : float {
     return 0.95;
+}
+
+//
+public function GetConsumerGradeDamageThreshold() : float {
+    return 2.5;
 }

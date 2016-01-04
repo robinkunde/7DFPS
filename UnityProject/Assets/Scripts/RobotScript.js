@@ -4,7 +4,7 @@ This script governs the behavior of turrets and kill drones.
 General notes:
 1. There was a hint here that kill drones were supposed to return to their orginal position after losing track of the player, but it's no implemented.
 2. Robots bullets are faster than player bullets.
-3. Drone can take damage from collisions, if their speed is high enough. In practice, that threshold doesn't seem to be ever met though.
+3. Drone can take damage from collisions, if their speed is high enough. In practice, that threshold doesn't seem to be ever met though, unless it falls from a great height.
 
 */
 #pragma strict
@@ -727,7 +727,11 @@ function Update() {
 
 function OnCollisionEnter(collision : Collision) {
     if (robot_type == RobotType.SHOCK_DRONE) {
-        if (collision.impactForceSum.magnitude > 10) {
+        var impact_damage_threshold = 10;
+        if (mod_controller.HasPerk(Perk.CONSUMER_GRADE)) {
+            impact_damage_threshold = mod_controller.GetConsumerGradeDamageThreshold();
+        }
+        if (collision.impactForceSum.magnitude > impact_damage_threshold) {
             if (Random.Range(0.0, 1.0) < 0.5 && motor_alive) {
                 Damage(transform.FindChild("motor").gameObject);
             } else if (Random.Range(0.0, 1.0) < 0.5 && camera_alive) {

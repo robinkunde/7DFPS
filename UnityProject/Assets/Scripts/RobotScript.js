@@ -63,6 +63,7 @@ private var bottom_rotor_rotation      = 0.0;
 private var stuck                      = false;
 private var stuck_delay                = 0.0;
 private var distance_sleep             = false;
+// mod related state
 private var has_seen_player            = false;
 
 private var rotation_x                 = Spring(0.0, 0.0, 100.0, 0.0001);
@@ -488,6 +489,8 @@ function UpdateDrone() {
         // reduce to drifting speed in idle state
         if (ai_state == AIState.IDLE) {
             target_accel *= 0.1;
+        } else if (ai_state == AIState.FIRING && mod_controller.HasPerk(Perk.BROWNOUT)) {
+            target_accel *= 0.0;
         }
         // base upward acceleration against gravity
         target_accel.y -= Physics.gravity.y;

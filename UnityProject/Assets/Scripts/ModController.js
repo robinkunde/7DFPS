@@ -11,6 +11,7 @@ enum Perk {
     SLOW_DAY,
     UNSEEN,
     CONSUMER_GRADE,
+    BROWNOUT,
 };
 
 private var perk_titles = {
@@ -23,7 +24,8 @@ private var perk_titles = {
     Perk.DEJA_VU        : 'Déjà vu',
     Perk.SLOW_DAY       : 'Slow Day',
     Perk.UNSEEN         : 'The Unseen Bullet is the Deadliest',
-    Perk.CONSUMER_GRADE : 'Consumer Grade'
+    Perk.CONSUMER_GRADE : 'Consumer Grade',
+    Perk.BROWNOUT       : 'Brownout'
 };
 
 private var available_perks = {
@@ -36,7 +38,8 @@ private var available_perks = {
     Perk.DEJA_VU        : 0.25,
     Perk.SLOW_DAY       : 1.0,
     Perk.UNSEEN         : 1.0,
-    Perk.CONSUMER_GRADE : 1.0
+    Perk.CONSUMER_GRADE : 1.0,
+    Perk.BROWNOUT       : 1.0
 };
 
 private var active_perks    = new Hashtable();

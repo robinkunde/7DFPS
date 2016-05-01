@@ -264,9 +264,9 @@ function UpdateStationaryTurret() {
             case AIState.FIRING:
                 // vector between target and pivot
                 var rel_pos = target_pos - point_pivot.position;
-                // calculate the rotation target angle around the pivot's y axis based on pivot orientation
-                // I haven't encoutered this specialized version of the angle formula before
-                var target_y = Mathf.Atan2(Vector3.Dot(rel_pos, point_pivot.right), Vector3.Dot(rel_pos, point_pivot.forward)) / Mathf.PI * 180;
+                // Calculate the rotation target angle around the pivot's y axis based on pivot orientation.
+                // This is an specialized version of the regular formula.
+                var target_y = Mathf.Atan2(Vector3.Dot(rel_pos, point_pivot.right), Vector3.Dot(rel_pos, point_pivot.forward)) * Mathf.Rad2Deg;
 
                 // ensure rotation direction is always shortest way to target
                 while (target_y > rotation_y.state + 180) {
@@ -278,7 +278,7 @@ function UpdateStationaryTurret() {
                 rotation_y.target_state = target_y;
 
                 // calculate angle between x-z plane and target y pos
-                var target_x            = -Mathf.Asin(Vector3.Dot(rel_pos.normalized, point_pivot.up)) / Mathf.PI * 180;
+                var target_x            = -Mathf.Asin(Vector3.Dot(rel_pos.normalized, point_pivot.up)) * Mathf.Rad2Deg;
                 rotation_x.target_state = Mathf.Clamp(target_x, -40, 40);
                 break;
         }
@@ -420,11 +420,11 @@ function UpdateStationaryTurret() {
     gun_pivot.localPosition = initial_turret_position;
     gun_pivot.RotateAround(
         point_pivot.position,
-        point_pivot.rotation * Vector3(1, 0, 0),
+        point_pivot.forward,
         rotation_x.state);
     gun_pivot.RotateAround(
         point_pivot.position,
-        point_pivot.rotation * Vector3(0, 1, 0),
+        point_pivot.up,
         rotation_y.state);
 }
 
@@ -496,11 +496,11 @@ function UpdateDrone() {
             tilt_correction += transform.up;
             tilt_correction *= 0.1;
         } else {
-            var target_y = Mathf.Atan2(Vector3.Dot(rel_pos, transform.right), Vector3.Dot(rel_pos, transform.forward)) / Mathf.PI * 180;
-            while (target_y > 180) {
+            var target_y = Mathf.Atan2(Vector3.Dot(rel_pos, transform.right), Vector3.Dot(rel_pos, transform.forward)) * Mathf.Rad2Deg;
+            while (target_y > 180.0) {
                 target_y -= 360.0;
             }
-            while (target_y < -180) {
+            while (target_y < -180.0) {
                 target_y += 360.0;
             }
             tilt_correction += transform.up * target_y;
@@ -664,14 +664,14 @@ function UpdateDrone() {
         }
         switch (ai_state) {
             case AIState.IDLE:
-                drone_light.light.color = Color(0, 0, 1);
+                drone_light.light.color = Color(0.0, 0.0, 1.0);
                 break;
             case AIState.AIMING:
-                drone_light.light.color = Color(1, 0, 0);
+                drone_light.light.color = Color(1.0, 0.0, 0.0);
                 break;
             case AIState.ALERT:
             case AIState.ALERT_COOLDOWN:
-                drone_light.light.color = Color(1, 1, 0);
+                drone_light.light.color = Color(1.0, 1.0, 0.0);
                 break;
         }
     } else {
@@ -696,10 +696,10 @@ function UpdateDrone() {
     } else {
         sound_line_of_sight -= Time.deltaTime * 3.0;
     }
-    sound_line_of_sight = Mathf.Clamp(sound_line_of_sight, 0, 1);
+    sound_line_of_sight = Mathf.Clamp(sound_line_of_sight, 0.0, 1.0);
 
     audiosource_motor.volume                                                  *= 0.5 + sound_line_of_sight * 0.5;
-    object_audiosource_motor.GetComponent(AudioLowPassFilter).cutoffFrequency = Mathf.Lerp(5000, 44000, sound_line_of_sight);
+    object_audiosource_motor.GetComponent(AudioLowPassFilter).cutoffFrequency = Mathf.Lerp(5000.0, 44000.0, sound_line_of_sight);
 }
 
 
@@ -736,7 +736,7 @@ function OnCollisionEnter(collision : Collision) {
 
 function FixedUpdate() {
     if (robot_type == RobotType.SHOCK_DRONE && !distance_sleep) {
-        rigidbody.AddForce(transform.rotation * Vector3(0, 1, 0) * rotor_speed, ForceMode.Force);
+        rigidbody.AddForce(transform.up * rotor_speed, ForceMode.Force);
         if (motor_alive) {
             rigidbody.AddTorque(tilt_correction, ForceMode.Force);
         }

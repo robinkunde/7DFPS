@@ -65,6 +65,10 @@ private var stuck_delay                = 0.0;
 private var distance_sleep             = false;
 // mod related state
 private var has_seen_player            = false;
+private var local_delta_time           = 0.0;
+private var local_time_scale           = 0.0;
+var being_aimed_at                     = false;
+private var last_frame_aimed_at        = false;
 
 private var rotation_x                 = Spring(0.0, 0.0, 100.0, 0.0001);
 private var rotation_y                 = Spring(0.0, 0.0, 100.0, 0.0001);
@@ -261,7 +265,7 @@ function UpdateStationaryTurret() {
     if (motor_alive) {
         switch (ai_state) {
             case AIState.IDLE:
-                rotation_y.target_state += Time.deltaTime * 100.0;
+                rotation_y.target_state += local_delta_time * 100.0;
                 // guard against overflow
                 if (rotation_y.target_state > 360.0) {
                     rotation_y.target_state -= 360.0;
@@ -322,7 +326,7 @@ function UpdateStationaryTurret() {
             --bullets;
         }
         if (gun_delay > 0.0 && ammo_alive && bullets > 0) {
-            gun_delay -= Time.deltaTime;
+            gun_delay -= local_delta_time;
         }
     }
 
@@ -374,7 +378,7 @@ function UpdateStationaryTurret() {
                     target_pos = player.transform.position;
                     break;
                 case AIState.ALERT:
-                    alert_delay -= Time.deltaTime;
+                    alert_delay -= local_delta_time;
                     if (alert_delay <= 0.0) {
                         ai_state = AIState.AIMING;
                     }
@@ -394,7 +398,7 @@ function UpdateStationaryTurret() {
                     alert_cooldown_delay = kAlertCooldownDelay;
                     break;
                 case AIState.ALERT_COOLDOWN:
-                    alert_cooldown_delay -= Time.deltaTime;
+                    alert_cooldown_delay -= local_delta_time;
                     if (alert_cooldown_delay <= 0.0) {
                         ai_state = AIState.IDLE;
                         audiosource_effect.PlayOneShot(sound_unalert, 0.3 * PlayerPrefs.GetFloat("sound_volume", 1.0));
@@ -415,14 +419,14 @@ function UpdateStationaryTurret() {
                 break;
         }
     } else {
-        turret_light.intensity *= Mathf.Pow(0.01, Time.deltaTime);
+        turret_light.intensity *= Mathf.Pow(0.01, local_delta_time);
     }
     player.GetComponent(MusicScript).AddDangerLevel(danger);
 
     // adjust motor pitch depending on rotation speed
     var target_pitch        = (Mathf.Abs(rotation_y.vel) + Mathf.Abs(rotation_x.vel)) * 0.01;
     target_pitch            = Mathf.Clamp(target_pitch, 0.2, 2.0);
-    audiosource_motor.pitch = Mathf.Lerp(audiosource_motor.pitch, target_pitch, Mathf.Pow(0.0001, Time.deltaTime));
+    audiosource_motor.pitch = Mathf.Lerp(audiosource_motor.pitch, target_pitch, Mathf.Pow(0.0001, local_delta_time));
 
     //
     rotation_x.Update();
@@ -521,7 +525,7 @@ function UpdateDrone() {
         }
 
         if (rigidbody.velocity.magnitude < 0.2) {
-            stuck_delay += Time.deltaTime;
+            stuck_delay += local_delta_time;
             if (stuck_delay > 1.0) {
                 target_pos  = transform.position + Vector3(Random.Range(-1.0, 1.0), Random.Range(-1.0, 1.0), Random.Range(-1.0, 1.0));
                 stuck_delay = 0.0;
@@ -530,7 +534,7 @@ function UpdateDrone() {
             stuck_delay = 0.0;
         }
     } else {
-        rotor_speed           = Mathf.Max(0.0, rotor_speed - Time.deltaTime * 5.0);
+        rotor_speed           = Mathf.Max(0.0, rotor_speed - local_delta_time * 5.0);
         rigidbody.angularDrag = 0.05;
     }
 
@@ -549,11 +553,11 @@ function UpdateDrone() {
     } else {
         audiosource_taser.Stop();
     }
-    gun_delay = Mathf.Max(0.0, gun_delay - Time.deltaTime);
+    gun_delay = Mathf.Max(0.0, gun_delay - local_delta_time);
 
-    top_rotor_rotation                                              += rotor_speed * Time.deltaTime * 1000.0;
-    bottom_rotor_rotation                                           -= rotor_speed * Time.deltaTime * 1000.0;
-    var render_rotors                                               = (rotor_speed * Time.timeScale) < 7.0;
+    top_rotor_rotation                                              += rotor_speed * local_delta_time * 1000.0;
+    bottom_rotor_rotation                                           -= rotor_speed * local_delta_time * 1000.0;
+    var render_rotors                                               = (rotor_speed * local_time_scale) < 7.0;
     transform.FindChild("bottom rotor").gameObject.renderer.enabled = render_rotors;
     transform.FindChild("top rotor").gameObject.renderer.enabled    = render_rotors;
     transform.FindChild("bottom rotor").localEulerAngles.y          = bottom_rotor_rotation;
@@ -563,7 +567,7 @@ function UpdateDrone() {
         if (ai_state == AIState.IDLE) {
             switch (camera_pivot_state) {
                 case CameraPivotState.DOWN:
-                    camera_pivot_angle += Time.deltaTime * 25.0;
+                    camera_pivot_angle += local_delta_time * 25.0;
                     if (camera_pivot_angle > 50) {
                         camera_pivot_angle = 50;
                         camera_pivot_state = CameraPivotState.WAIT_UP;
@@ -571,7 +575,7 @@ function UpdateDrone() {
                     }
                     break;
                 case CameraPivotState.UP:
-                    camera_pivot_angle -= Time.deltaTime * 25.0;
+                    camera_pivot_angle -= local_delta_time * 25.0;
                     if (camera_pivot_angle < 0) {
                         camera_pivot_angle = 0;
                         camera_pivot_state = CameraPivotState.WAIT_DOWN;
@@ -579,20 +583,20 @@ function UpdateDrone() {
                     }
                     break;
                 case CameraPivotState.WAIT_DOWN:
-                    camera_pivot_delay -= Time.deltaTime;
+                    camera_pivot_delay -= local_delta_time;
                     if (camera_pivot_delay < 0) {
                         camera_pivot_state = CameraPivotState.DOWN;
                     }
                     break;
                 case CameraPivotState.WAIT_UP:
-                    camera_pivot_delay -= Time.deltaTime;
+                    camera_pivot_delay -= local_delta_time;
                     if (camera_pivot_delay < 0) {
                         camera_pivot_state = CameraPivotState.UP;
                     }
                     break;
             }
         } else {
-            camera_pivot_angle -= Time.deltaTime * 25.0;
+            camera_pivot_angle -= local_delta_time * 25.0;
             if (camera_pivot_angle < 0) {
                 camera_pivot_angle = 0;
             }
@@ -649,7 +653,7 @@ function UpdateDrone() {
                 case AIState.ALERT:
                     target_pos    = new_target;
                     target_pos.y += 1.0;
-                    alert_delay  -= Time.deltaTime;
+                    alert_delay  -= local_delta_time;
                     if (alert_delay <= 0.0) {
                         ai_state = AIState.AIMING;
                     }
@@ -668,7 +672,7 @@ function UpdateDrone() {
                     alert_cooldown_delay = kAlertCooldownDelay;
                     break;
                 case AIState.ALERT_COOLDOWN:
-                    alert_cooldown_delay -= Time.deltaTime;
+                    alert_cooldown_delay -= local_delta_time;
                     if (alert_cooldown_delay <= 0.0) {
                         ai_state = AIState.IDLE;
                         audiosource_effect.PlayOneShot(sound_unalert, 0.3 * PlayerPrefs.GetFloat("sound_volume", 1.0));
@@ -689,7 +693,7 @@ function UpdateDrone() {
                 break;
         }
     } else {
-        drone_light.light.intensity *= Mathf.Pow(0.01, Time.deltaTime);
+        drone_light.light.intensity *= Mathf.Pow(0.01, local_delta_time);
     }
     var lens_flare : LensFlare = GetDroneLensFlareObject().GetComponent(LensFlare);
     lens_flare.color           = drone_light.light.color;
@@ -699,16 +703,16 @@ function UpdateDrone() {
     var main_camera_position  = GameObject.Find("Main Camera").transform.position;
     var target_pitch          = rotor_speed * 0.2;
     target_pitch              = Mathf.Clamp(target_pitch, 0.2, 3.0);
-    audiosource_motor.pitch   = Mathf.Lerp(audiosource_motor.pitch, target_pitch, Mathf.Pow(0.0001, Time.deltaTime));
+    audiosource_motor.pitch   = Mathf.Lerp(audiosource_motor.pitch, target_pitch, Mathf.Pow(0.0001, local_delta_time));
 
     audiosource_motor.volume  = rotor_speed * 0.1 * PlayerPrefs.GetFloat("sound_volume", 1.0);
     audiosource_motor.volume -= Vector3.Distance(main_camera_position, transform.position) * 0.0125 * PlayerPrefs.GetFloat("sound_volume", 1.0);
 
     //
     if (Physics.Linecast(transform.position, main_camera_position, hit, 1<<0)) {
-        sound_line_of_sight += Time.deltaTime * 3.0;
+        sound_line_of_sight += local_delta_time * 3.0;
     } else {
-        sound_line_of_sight -= Time.deltaTime * 3.0;
+        sound_line_of_sight -= local_delta_time * 3.0;
     }
     sound_line_of_sight = Mathf.Clamp(sound_line_of_sight, 0.0, 1.0);
 
@@ -716,8 +720,14 @@ function UpdateDrone() {
     object_audiosource_motor.GetComponent(AudioLowPassFilter).cutoffFrequency = Mathf.Lerp(5000.0, 44000.0, sound_line_of_sight);
 }
 
-
 function Update() {
+    if (being_aimed_at || last_frame_aimed_at) {
+        local_delta_time = Time.deltaTime * mod_controller.GetGlacialStareTimeMutliplier();
+        local_time_scale = Time.timeScale * mod_controller.GetGlacialStareTimeMutliplier();
+    } else {
+        local_delta_time = Time.deltaTime;
+        local_time_scale = Time.timeScale;
+    }
     switch (robot_type) {
         case RobotType.STATIONARY_TURRET:
             UpdateStationaryTurret();
@@ -758,5 +768,13 @@ function FixedUpdate() {
         if (motor_alive) {
             rigidbody.AddTorque(tilt_correction, ForceMode.Force);
         }
+        if ((being_aimed_at || last_frame_aimed_at) && mod_controller.HasPerk(Perk.GLACIAL_STARE)) {
+            rigidbody.velocity *= mod_controller.GetGlacialStareTimeMutliplier();
+        }
     }
+}
+
+function LateUpdate() {
+    last_frame_aimed_at = being_aimed_at;
+    being_aimed_at = false;
 }

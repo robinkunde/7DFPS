@@ -12,6 +12,7 @@ enum Perk {
     UNSEEN,
     CONSUMER_GRADE,
     BROWNOUT,
+    GLACIAL_STARE,
 };
 
 private var perk_titles = {
@@ -25,7 +26,8 @@ private var perk_titles = {
     Perk.SLOW_DAY       : 'Slow Day',
     Perk.UNSEEN         : 'The Unseen Bullet is the Deadliest',
     Perk.CONSUMER_GRADE : 'Consumer Grade',
-    Perk.BROWNOUT       : 'Brownout'
+    Perk.BROWNOUT       : 'Brownout',
+    Perk.GLACIAL_STARE  : 'Glacial Stare'
 };
 
 private var available_perks = {
@@ -39,7 +41,8 @@ private var available_perks = {
     Perk.SLOW_DAY       : 1.0,
     Perk.UNSEEN         : 1.0,
     Perk.CONSUMER_GRADE : 1.0,
-    Perk.BROWNOUT       : 1.0
+    Perk.BROWNOUT       : 1.0,
+    Perk.GLACIAL_STARE  : 1.0
 };
 
 private var active_perks    = new Hashtable();
@@ -185,4 +188,13 @@ public function GetSlowDayTimescale() : float {
 //
 public function GetConsumerGradeDamageThreshold() : float {
     return 2.5;
+}
+
+//
+public function GetGlacialStareTimeMutliplier() : float {
+    return 0.75;
+}
+
+public function GetGlacialStareRange() : float {
+    return 1000.0;
 }

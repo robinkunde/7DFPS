@@ -432,7 +432,7 @@ function AimPos() : Vector3 {
 function AimDir() : Vector3 {
     var aim_rot = Quaternion();
     aim_rot.SetEulerAngles(-rotation_y * Mathf.PI / 180.0, rotation_x * Mathf.PI / 180.0, 0.0);
-    return aim_rot * Vector3(0.0, 0.0, 1.0);
+    return aim_rot * Vector3.forward;
 }
 
 function GetGunScript() : GunScript {
@@ -1582,6 +1582,18 @@ function Update() {
     UpdateAimSpring();
     UpdateCameraRotationControls();
     UpdateCameraAndPlayerTransformation();
+    if (mod_controller.HasPerk(Perk.GLACIAL_STARE)) {
+        var hit: RaycastHit;
+        var camera_pos = main_camera.transform.position;
+        var end_pos    = camera_pos + main_camera.transform.forward * mod_controller.GetGlacialStareRange();
+        if (Physics.Linecast(camera_pos, end_pos, hit, 1<<0 | 1<<10)) {
+            var hit_obj                     = hit.collider.gameObject;
+            var turret_script : RobotScript = RecursiveHasScript(hit_obj, "RobotScript", 3);
+            if (turret_script) {
+                turret_script.being_aimed_at = true;
+            }
+        }
+    }
     if (gun_instance) {
         UpdateGunTransformation();
     }
@@ -1872,5 +1884,15 @@ function OnGUI() {
     if (win_fade > 0.0) {
         GUI.color = Color(1.0, 1.0, 1.0, win_fade);
         GUI.DrawTexture(Rect(0.0, 0.0, Screen.width, Screen.height), texture_death_screen, ScaleMode.StretchToFill, true);
+    }
+}
+
+function RecursiveHasScript(obj : GameObject, script : String, depth : int) : MonoBehaviour {
+    if (obj.GetComponent(script)) {
+        return obj.GetComponent(script);
+    } else if (depth > 0 && obj.transform.parent) {
+        return RecursiveHasScript(obj.transform.parent.gameObject, script, depth - 1);
+    } else {
+        return null;
     }
 }
